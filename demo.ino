@@ -1,5 +1,5 @@
-#include "../developDemo/src/kramotory/kramotory.h"
-//#include "/src/kramotory/kramotory.h"
+
+#include "src/kramotory/kramotory.h"
 
 // declaration:
 #define PIN_M1A 18
