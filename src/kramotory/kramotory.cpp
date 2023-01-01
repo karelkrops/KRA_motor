@@ -6,16 +6,20 @@ SemaphoreHandle_t mutexKraMotory;
 Motor KraMotory::motory[KRA_MOTORY_MAX_MOTOR] = {};
 bool KraMotory::isActiveLoop = false;
 TaskHandle_t *KraMotory::rtosTaskHandler = 0;
+int KraMotory::counterIdMotoru=0;
 
-KraMotory::KraMotory(int idMotor, int GPIO_PWM1, int GPIO_PWM2, int GPIO_enc1 = 0, int GPIO_enc2 = 0)
+KraMotory::KraMotory(int GPIO_chanelPWM1, int GPIO_chanelPWM2, int GPIO_PWM1, int GPIO_PWM2, int GPIO_enc1 = 0, int GPIO_enc2 = 0)
 {
   if (idMotor >= 0 && idMotor < KRA_MOTORY_MAX_MOTOR && !KraMotory::motory[idMotor].isReady)
   {
-    this->idMotor = idMotor;
+    this->idMotor = counterIdMotoru;
+    counterIdMotoru++;
     KraMotory::motory[this->idMotor].GPIO_PWM1 = GPIO_PWM1;
     KraMotory::motory[this->idMotor].GPIO_PWM2 = GPIO_PWM2;
     KraMotory::motory[this->idMotor].GPIO_enc1 = GPIO_enc1;
     KraMotory::motory[this->idMotor].GPIO_enc2 = GPIO_enc2;
+    KraMotory::motory[this->idMotor].GPIO_chanelPWM1 = GPIO_chanelPWM1;
+    KraMotory::motory[this->idMotor].GPIO_chanelPWM2 = GPIO_chanelPWM2;
     KraMotory::motory[this->idMotor].counter = 0;
     KraMotory::motory[this->idMotor].speed = 0;
     KraMotory::motory[this->idMotor].lastMicros = micros();
@@ -43,8 +47,12 @@ void KraMotory::init()
     KraMotory::motory[this->idMotor].counter = 0;
     KraMotory::motory[this->idMotor].speed = 0;
     KraMotory::motory[this->idMotor].lastMicros = micros();
-    pinMode(KraMotory::motory[this->idMotor].GPIO_PWM1, OUTPUT);
-    pinMode(KraMotory::motory[this->idMotor].GPIO_PWM2, OUTPUT);
+    ledcSetup(KraMotory::motory[this->idMotor].GPIO_chanelPWM1,5000,8);
+    ledcAttachPin(KraMotory::motory[this->idMotor].GPIO_PWM1,KraMotory::motory[this->idMotor].GPIO_chanelPWM1);
+    ledcSetup(KraMotory::motory[this->idMotor].GPIO_chanelPWM2,5000,8);
+    ledcAttachPin(KraMotory::motory[this->idMotor].GPIO_PWM2,KraMotory::motory[this->idMotor].GPIO_chanelPWM2);
+//    pinMode(KraMotory::motory[this->idMotor].GPIO_PWM1, OUTPUT);
+//    pinMode(KraMotory::motory[this->idMotor].GPIO_PWM2, OUTPUT);
     KraMotory::motory[this->idMotor].pulseDistanc = (KraMotory::motory[this->idMotor].wheelDiameter * PI) / KraMotory::motory[this->idMotor].gearRatio; // ujeta delka na pulz
 
     //       int a=pwm0_out0a;
@@ -275,15 +283,19 @@ void KraMotory::setPowerInter(int idMotor, double requiredPower)
   {
     //        analogWrite(KraMotory::motory[idMotor].GPIO_PWM1, 0U,255U);
     //        analogWrite(KraMotory::motory[idMotor].GPIO_PWM2, power,255);
-    analogWrite(KraMotory::motory[idMotor].GPIO_PWM2, 255U, 255U);
-    analogWrite(KraMotory::motory[idMotor].GPIO_PWM1, 255U - power, 255);
+//    analogWrite(KraMotory::motory[idMotor].GPIO_PWM2, 255U, 255U);
+//    analogWrite(KraMotory::motory[idMotor].GPIO_PWM1, 255U - power, 255);
+    ledcWrite(KraMotory::motory[idMotor].GPIO_chanelPWM2,255U);
+    ledcWrite(KraMotory::motory[idMotor].GPIO_chanelPWM1,255U - power);
   }
   else
   {
     //        analogWrite(KraMotory::motory[idMotor].GPIO_PWM1, power,255U);
     //        analogWrite(KraMotory::motory[idMotor].GPIO_PWM2, 0U,255U);
-    analogWrite(KraMotory::motory[idMotor].GPIO_PWM2, 255U - power, 255U);
-    analogWrite(KraMotory::motory[idMotor].GPIO_PWM1, 255U, 255U);
+//    analogWrite(KraMotory::motory[idMotor].GPIO_PWM2, 255U - power, 255U);
+//    analogWrite(KraMotory::motory[idMotor].GPIO_PWM1, 255U, 255U);
+    ledcWrite(KraMotory::motory[idMotor].GPIO_chanelPWM2,255U - power);
+    ledcWrite(KraMotory::motory[idMotor].GPIO_chanelPWM1,255U);
   }
 }
 void KraMotory::setSpeedInter(int idMotor, double requiredSpeed)

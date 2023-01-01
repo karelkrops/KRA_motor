@@ -5,8 +5,8 @@
  * pro platformu ESP32
  * konstrukce F1 z roku 2021
  * maximalni pocet motoru je 6
- * poslední aktualizace 16.1.2022
- * verze 1.4.1
+ * poslední aktualizace 1.1.2023
+ * verze 1.5.0
  */
 
 /** HELP
@@ -25,8 +25,8 @@
 #include "kramotory.h"
  
  // setting & inicializtion:
- KraMotory motor1= KraMotory(0,PIN_M1A,PIN_M1B,PIN_ENC1A,PIN_ENC1B);
- KraMotory motor2= KraMotory(1,PIN_M2A,PIN_M2B,PIN_ENC2A,PIN_ENC2B);
+ KraMotory motor1= KraMotory(0,1,PIN_M1A,PIN_M1B,PIN_ENC1A,PIN_ENC1B); // analog chanel 0..15 
+ KraMotory motor2= KraMotory(2,3,PIN_M2A,PIN_M2B,PIN_ENC2A,PIN_ENC2B);
   
  // setup
   motor1.setWheelDiameter(45); // prumer kola 45 mm
@@ -35,8 +35,8 @@
   motor2.setGearRatio(30*3*4); // prevodovz pomer 30, sestipolovy magnet (3* sever a 3* jih), polsu s enkoderu na magnet 4
   motor1.init();
   motor2.init();
-  motor1.setAccelerationFront(4000); // dopredne zrychleni v mm/s^2
-  motor2.setAccelerationFront(4000); // dopredne zrychleni v mm/s^2
+  motor1.setAccelerationFront(20000); // dopredne zrychleni v mm/s^2
+  motor2.setAccelerationFront(20000); // dopredne zrychleni v mm/s^2
   motor1.setAccelerationBack(20000); // zrychleni pri couvani zrychleni v mm/s^2
   motor2.setAccelerationBack(20000); // zrychleni pri couvani zrychleni v mm/s^2
   motor1.setBreakFront(20000); // dopredne brzdeni v mm/s^2
@@ -66,7 +66,7 @@
 #define KRA_MOTORY_MAX_SPEED 3500 // rychlost je merena v [mm / sekund]
 #define KRA_MOTORY_MIN_SPEED 10 // rychlost je merena v [mm / sekund] je dulezite pro detekci stojicich motoru
 #define KRA_MOTORY_MIN_POWER 50  // minimalni vykon na minimalni pohyb kol
-#define KRA_AccelerationFront 3500
+#define KRA_AccelerationFront 20000
 #define KRA_AccelerationBack 20000
 #define KRA_BreakFront 20000
 #define KRA_BreakBack 20000
@@ -79,7 +79,8 @@
 // https://otik.zcu.cz/bitstream/11025/13949/1/DIPLOMOVA%20PRACE.pdf
 // https://circuitdigest.com/microcontroller-projects/arduino-freertos-tutorial-using-semaphore-and-mutex-in-freertos-with-arduino
 
-#include <analogWrite.h> // https://github.com/ERROPiX/ESP32_AnalogWrite
+//#include <analogWrite.h> // https://github.com/ERROPiX/ESP32_AnalogWrite
+// alternative https://randomnerdtutorials.com/esp32-pwm-arduino-ide/
 
 //extern volatile long counter;
 /**
@@ -91,6 +92,7 @@ struct Motor
 {
     /** GPIO of engine */
     int GPIO_PWM1, GPIO_PWM2, GPIO_enc1, GPIO_enc2;
+    int GPIO_chanelPWM1,GPIO_chanelPWM2;
     /** prumer kola [mm] */
     double wheelDiameter = 45;
     /** pocet pulzu encoderu na otacku. Pocitaji se obe nabehove i sestupne hrany */
@@ -131,6 +133,7 @@ class KraMotory
 {
 private:
     static TaskHandle_t *rtosTaskHandler;
+    static int counterIdMotoru;
     static void rtosTask(void *pvParameters);
     static bool isActiveLoop;
     static double calcSpeed(int idMotor, long deltaMicros);
@@ -148,7 +151,7 @@ public:
     void setAccelerationBack(double i=KRA_AccelerationBack);
     void setBreakFront(double i=KRA_BreakFront);
     void setBreakBack(double i=KRA_BreakBack);
-    KraMotory(int idMotor, int GPIO_PWM1, int GPIO_PWM2, int GPIO_enc1, int GPIO_enc2);
+    KraMotory(int GPIO_chanelPWM1, int GPIO_chanelPWM2, int GPIO_PWM1, int GPIO_PWM2, int GPIO_enc1, int GPIO_enc2);
     ~KraMotory();
     void setWheelDiameter(double wheelDiameter);
     void setGearRatio(int gearRatio);
