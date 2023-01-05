@@ -71,6 +71,21 @@
 #define KRA_BreakFront 20000
 #define KRA_BreakBack 20000
 
+#ifdef ARDUINO_BLUEPILL_F103C8
+# define USE_STM32
+#endif
+#ifdef ARDUINO_ARCH_STM32
+# define USE_STM32
+#endif
+
+#ifndef USE_STM32
+# define USE_ESP32
+#endif
+
+#ifdef USE_STM32
+# include <STM32FreeRTOS.h>
+#endif
+
 // popis interupt in ESP32
 // https://lastminuteengineers.com/handling-esp32-gpio-interrupts-tutorial/
 
@@ -166,6 +181,7 @@ public:
     double getDistance();
 };
 
+#ifdef USE_ESP32
 void IRAM_ATTR isr(int idMotor);
 inline void IRAM_ATTR isr0() { isr(0); }
 inline void IRAM_ATTR isr1() { isr(1); }
@@ -180,4 +196,24 @@ inline void IRAM_ATTR isrS2() { isrS(2); }
 inline void IRAM_ATTR isrS3() { isrS(3); }
 inline void IRAM_ATTR isrS4() { isrS(4); }
 inline void IRAM_ATTR isrS5() { isrS(5); }
+#endif
+
+#ifdef USE_STM32
+void isr(int idMotor);
+inline void isr0() { isr(0); }
+inline void isr1() { isr(1); }
+inline void isr2() { isr(2); }
+inline void isr3() { isr(3); }
+inline void isr4() { isr(4); }
+inline void isr5() { isr(5); }
+void isrS(int idMotor);
+inline void isrS0() { isrS(0); }
+inline void isrS1() { isrS(1); }
+inline void isrS2() { isrS(2); }
+inline void isrS3() { isrS(3); }
+inline void isrS4() { isrS(4); }
+inline void isrS5() { isrS(5); }
+#endif
+
+
 #endif //KRA_MOTORY

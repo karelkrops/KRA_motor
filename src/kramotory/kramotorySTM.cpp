@@ -1,5 +1,5 @@
 #include "kramotory.h"
-#ifdef USE_ESP32
+#ifdef USE_STM32
 //volatile long counter=1;
 
 SemaphoreHandle_t mutexKraMotory;
@@ -47,12 +47,12 @@ void KraMotory::init()
     KraMotory::motory[this->idMotor].counter = 0;
     KraMotory::motory[this->idMotor].speed = 0;
     KraMotory::motory[this->idMotor].lastMicros = micros();
-    ledcSetup(KraMotory::motory[this->idMotor].GPIO_chanelPWM1,5000,8);
-    ledcAttachPin(KraMotory::motory[this->idMotor].GPIO_PWM1,KraMotory::motory[this->idMotor].GPIO_chanelPWM1);
-    ledcSetup(KraMotory::motory[this->idMotor].GPIO_chanelPWM2,5000,8);
-    ledcAttachPin(KraMotory::motory[this->idMotor].GPIO_PWM2,KraMotory::motory[this->idMotor].GPIO_chanelPWM2);
-//    pinMode(KraMotory::motory[this->idMotor].GPIO_PWM1, OUTPUT);
-//    pinMode(KraMotory::motory[this->idMotor].GPIO_PWM2, OUTPUT);
+//    ledcSetup(KraMotory::motory[this->idMotor].GPIO_chanelPWM1,5000,8);
+//    ledcAttachPin(KraMotory::motory[this->idMotor].GPIO_PWM1,KraMotory::motory[this->idMotor].GPIO_chanelPWM1);
+//    ledcSetup(KraMotory::motory[this->idMotor].GPIO_chanelPWM2,5000,8);
+//    ledcAttachPin(KraMotory::motory[this->idMotor].GPIO_PWM2,KraMotory::motory[this->idMotor].GPIO_chanelPWM2);
+    pinMode(KraMotory::motory[this->idMotor].GPIO_PWM1, OUTPUT);
+    pinMode(KraMotory::motory[this->idMotor].GPIO_PWM2, OUTPUT);
     KraMotory::motory[this->idMotor].pulseDistanc = (KraMotory::motory[this->idMotor].wheelDiameter * PI) / KraMotory::motory[this->idMotor].gearRatio; // ujeta delka na pulz
 
     //       int a=pwm0_out0a;
@@ -106,14 +106,14 @@ void KraMotory::init()
     mutexKraMotory = xSemaphoreCreateMutex();
     if (mutexKraMotory)
     {
-      xTaskCreatePinnedToCore(
+      xTaskCreate(
           KraMotory::rtosTask, "TaskKraMotory" // A name just for humans
           ,
           1024 // This stack size can be checked & adjusted by reading the Stack Highwater
           ,
           0, 2 // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
           ,
-          rtosTaskHandler, 0);
+          rtosTaskHandler);
     }
   }
 }
@@ -283,19 +283,19 @@ void KraMotory::setPowerInter(int idMotor, double requiredPower)
   {
     //        analogWrite(KraMotory::motory[idMotor].GPIO_PWM1, 0U,255U);
     //        analogWrite(KraMotory::motory[idMotor].GPIO_PWM2, power,255);
-//    analogWrite(KraMotory::motory[idMotor].GPIO_PWM2, 255U, 255U);
-//    analogWrite(KraMotory::motory[idMotor].GPIO_PWM1, 255U - power, 255);
-    ledcWrite(KraMotory::motory[idMotor].GPIO_chanelPWM2,255U);
-    ledcWrite(KraMotory::motory[idMotor].GPIO_chanelPWM1,255U - power);
+    analogWrite(KraMotory::motory[idMotor].GPIO_PWM2, 255U);
+    analogWrite(KraMotory::motory[idMotor].GPIO_PWM1, 255U - power);
+//    ledcWrite(KraMotory::motory[idMotor].GPIO_chanelPWM2,255U);
+//    ledcWrite(KraMotory::motory[idMotor].GPIO_chanelPWM1,255U - power);
   }
   else
   {
     //        analogWrite(KraMotory::motory[idMotor].GPIO_PWM1, power,255U);
     //        analogWrite(KraMotory::motory[idMotor].GPIO_PWM2, 0U,255U);
-//    analogWrite(KraMotory::motory[idMotor].GPIO_PWM2, 255U - power, 255U);
-//    analogWrite(KraMotory::motory[idMotor].GPIO_PWM1, 255U, 255U);
-    ledcWrite(KraMotory::motory[idMotor].GPIO_chanelPWM2,255U - power);
-    ledcWrite(KraMotory::motory[idMotor].GPIO_chanelPWM1,255U);
+    analogWrite(KraMotory::motory[idMotor].GPIO_PWM2, 255U - power);
+    analogWrite(KraMotory::motory[idMotor].GPIO_PWM1, 255U);
+//    ledcWrite(KraMotory::motory[idMotor].GPIO_chanelPWM2,255U - power);
+//    ledcWrite(KraMotory::motory[idMotor].GPIO_chanelPWM1,255U);
   }
 }
 void KraMotory::setSpeedInter(int idMotor, double requiredSpeed)
@@ -446,7 +446,7 @@ void KraMotory::setBreakBack(double i)
 }
 
 // ----------------------------interupt------------------------------------------------------------
-void IRAM_ATTR isr(int idMotor)
+void isr(int idMotor)
 {
   //   KraMotory::motory[idMotor].counter = KraMotory::motory[idMotor].counter + 1;
   //return;
@@ -464,7 +464,7 @@ void IRAM_ATTR isr(int idMotor)
 
   KraMotory::motory[idMotor].lastMicros = micros();
 }
-void IRAM_ATTR isrS(int idMotor)
+void isrS(int idMotor)
 {
   //   KraMotory::motory[idMotor].counter = KraMotory::motory[idMotor].counter + 1;
   //return;
