@@ -78,7 +78,7 @@
 # define USE_STM32
 #endif
 
-#ifndef USE_STM32
+#ifdef ARDUINO_ARCH_ESP32
 # define USE_ESP32
 #endif
 
