@@ -2,6 +2,6 @@
     "configuration": "pnum=KRABOARD_F303RBT6,upload_method=MassStorage,xserial=generic,usb=CDCgen,xusb=FS,opt=osstd,rtlib=nano",
     "board": "kraboard:stm32:GenF3",
     "sketch": "developDemo.ino",
-    "port": "COM8",
+    "port": "COM9",
     "output": "./build"
 }

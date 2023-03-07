@@ -62,7 +62,9 @@
 
 #include <Arduino.h>
 
-//#define USE_FREE_RTOS
+#ifdef ARDUINO_ARCH_ESP32
+# define USE_FREE_RTOS  // not work in STM32
+#endif
 
 #define KRA_MOTORY_MAX_MOTOR 6    // maximalni pocet motoru
 #define KRA_MOTORY_MAX_SPEED 3500 // rychlost je merena v [mm / sekund]

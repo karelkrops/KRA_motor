@@ -37,10 +37,14 @@ KraMotory::KraMotory(int GPIO_chanelPWM1, int GPIO_chanelPWM2, int GPIO_PWM1, in
 void KraMotory::rtosTask(void *pvParameters)
 {
   (void)pvParameters;
+  digitalWrite(PD_2,1);
+  vTaskDelay(pdMS_TO_TICKS(100));
   for (;;)
   {
     loop();
-    vTaskDelay(pdMS_TO_TICKS(1));
+    digitalWrite(PD_2,!digitalRead(PD_2));
+//    vTaskDelay(pdMS_TO_TICKS(1));
+    vTaskDelay(1);
   }
 }
 #endif // USE_FREE_RTOS
@@ -135,6 +139,7 @@ void KraMotory::init()
           0, 2 // Priority, with 3 (configMAX_PRIORITIES - 1) being the highest, and 0 being the lowest.
           ,
           rtosTaskHandler);
+          vTaskStartScheduler();
 # endif
     }
   }
@@ -209,10 +214,10 @@ void KraMotory::thisLoop(int idMotor)
   else
   { // brzdeni
     double sp = 40;
-    if (KraMotory::motory[idMotor].speed != 0 && (KraMotory::motory[idMotor].requiredSpeed) / KraMotory::motory[idMotor].speed < 0.6) // 50% roydil rychlosti
-      sp = -20;
-    if (KraMotory::motory[idMotor].speed != 0 && (KraMotory::motory[idMotor].requiredSpeed) / KraMotory::motory[idMotor].speed < 0.1) // 50% roydil rychlosti
-      sp = -130;
+    if (KraMotory::motory[idMotor].speed != 0 && (KraMotory::motory[idMotor].requiredSpeed) / KraMotory::motory[idMotor].speed < 0.6) // 50% rozdil rychlosti
+      sp = 0;//-20;
+    if (KraMotory::motory[idMotor].speed != 0 && (KraMotory::motory[idMotor].requiredSpeed) / KraMotory::motory[idMotor].speed < 0.1) // 50% rozdil rychlosti
+      sp = 0;//-130;
     KraMotory::setPowerInter(idMotor, sp * ((KraMotory::motory[idMotor].requiredSpeed >= 0) ? 1 : -1));
   }
 
@@ -267,8 +272,7 @@ void KraMotory::acceleration(int idMotor, double deltaMicrosAccelerationRegulati
 }
 void KraMotory::loop()
 {
-  static unsigned long oldMicros = micros();
-  const double deltaMicrosAccelerationRegulation = 1000;
+
   KraMotory::isActiveLoop = true;
   for (size_t i = 0; i < KRA_MOTORY_MAX_MOTOR; i++)
   {
@@ -277,9 +281,15 @@ void KraMotory::loop()
       KraMotory::thisLoop(i);
     }
   }
+
+
+  static unsigned long oldMicros = micros();
+  const double deltaMicrosAccelerationRegulation = 1000;
   const double delta = micros() - oldMicros;
   if (delta < deltaMicrosAccelerationRegulation)
     return;
+
+
 
   for (size_t i = 0; i < KRA_MOTORY_MAX_MOTOR; i++)
   {
