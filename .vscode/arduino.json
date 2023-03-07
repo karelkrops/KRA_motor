@@ -1,6 +1,7 @@
 {
-    "configuration": "pnum=BLUEPILL_F103C8,upload_method=swdMethod,xserial=generic,usb=CDCgen,xusb=FS,opt=osstd,dbg=none,rtlib=nano",
-    "board": "STMicroelectronics:stm32:GenF1",
-    "sketch": "demo.ino",
-    "port": "COM8"
+    "configuration": "pnum=KRABOARD_F303RBT6,upload_method=MassStorage,xserial=generic,usb=CDCgen,xusb=FS,opt=osstd,rtlib=nano",
+    "board": "kraboard:stm32:GenF3",
+    "sketch": "developDemo.ino",
+    "port": "COM9",
+    "output": "./build"
 }

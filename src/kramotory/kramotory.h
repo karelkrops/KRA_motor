@@ -62,6 +62,10 @@
 
 #include <Arduino.h>
 
+#ifdef ARDUINO_ARCH_ESP32
+# define USE_FREE_RTOS  // not work in STM32
+#endif
+
 #define KRA_MOTORY_MAX_MOTOR 6    // maximalni pocet motoru
 #define KRA_MOTORY_MAX_SPEED 3500 // rychlost je merena v [mm / sekund]
 #define KRA_MOTORY_MIN_SPEED 10 // rychlost je merena v [mm / sekund] je dulezite pro detekci stojicich motoru
@@ -82,8 +86,11 @@
 # define USE_ESP32
 #endif
 
-#ifdef USE_STM32
-# include <STM32FreeRTOS.h>
+#ifdef USE_FREE_RTOS
+# ifdef USE_STM32
+#  include <STM32FreeRTOS.h>
+//#  include <FreeRTOS.h>
+# endif
 #endif
 
 // popis interupt in ESP32
@@ -147,9 +154,11 @@ struct Motor
 class KraMotory
 {
 private:
+#ifdef USE_FREE_RTOS
     static TaskHandle_t *rtosTaskHandler;
-    static int counterIdMotoru;
     static void rtosTask(void *pvParameters);
+#endif // USE_FREE_RTOS
+    static int counterIdMotoru;
     static bool isActiveLoop;
     static double calcSpeed(int idMotor, long deltaMicros);
     static long calcRequiredDeltaMicros(int idMotor, double pSpeed);
