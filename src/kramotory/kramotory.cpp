@@ -564,7 +564,7 @@ void isr(int idMotor)
 }
 
 #ifdef USE_ESP32
-void IRAM_ATTR isr(int idMotor)
+void IRAM_ATTR isrS(int idMotor)
 #endif
 #ifdef USE_STM32
 void isrS(int idMotor)
