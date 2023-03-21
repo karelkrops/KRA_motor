@@ -1,6 +1,9 @@
 
 #include "src/kramotory/kramotory.h"
 
+// Cifri
+// tento text vlozil Cifri
+
 #ifdef ARDUINO_ARCH_STM32
 #define KRABOARD
 #endif
