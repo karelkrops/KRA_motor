@@ -37,12 +37,12 @@ KraMotory::KraMotory(int GPIO_chanelPWM1, int GPIO_chanelPWM2, int GPIO_PWM1, in
 void KraMotory::rtosTask(void *pvParameters)
 {
   (void)pvParameters;
-  digitalWrite(PD_2,1);
+//  digitalWrite(PD_2,1);
   vTaskDelay(pdMS_TO_TICKS(100));
   for (;;)
   {
     loop();
-    digitalWrite(PD_2,!digitalRead(PD_2));
+//    digitalWrite(PD_2,!digitalRead(PD_2));
 //    vTaskDelay(pdMS_TO_TICKS(1));
     vTaskDelay(1);
   }

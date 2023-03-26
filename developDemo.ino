@@ -56,7 +56,7 @@ KraMotory motorR = KraMotory(2, 3, PIN_MOTORRB, PIN_MOTORRA, PIN_ENC_RB, PIN_ENC
 
 void testPower()
 {
-    Serial.println("Test motorL power is starting. " + String(HAL_GetTick()));
+//    Serial.println("Test motorL power is starting. " + String(HAL_GetTick()));
     motorL.setPower(80); // power -255 .. 255
     void vypis();
     delay(5000);
@@ -70,7 +70,7 @@ void testPower()
     motorR.setPower(200); // power -255 .. 255
     delay(5000);
     motorR.setPower(50);
-    Serial.println("Test motors was stoped. " + String(getCurrentMillis()));
+//    Serial.println("Test motors was stoped. " + String(getCurrentMillis()));
     Serial.println("distanceL:" + String(motorL.getDistance()) + " distanceR:" + String(motorR.getDistance()));
     delay(5000);
     motorR.setPower(0);
@@ -92,14 +92,14 @@ void testSpeed()
 
 void vypis()
 {
-    static unsigned long oldTime = HAL_GetTick();
-    if (HAL_GetTick() - oldTime < 500)
+    static unsigned long oldTime = millis();
+    if (millis() - oldTime < 500)
     {
         return;
     }
-    oldTime = HAL_GetTick();
+    oldTime = millis();
 
-    digitalWrite(PIN_LED1, !digitalRead(PIN_LED1));
+//    digitalWrite(PIN_LED1, !digitalRead(PIN_LED1));
 
 //    Serial.println("- distanceL:" + String(motorL.getDistance()) + " distanceR:" + String(motorR.getDistance()));
 #ifdef USE_STM32
@@ -113,9 +113,9 @@ void vypis()
 
 void setup()
 {
-    pinMode(PIN_LED1,OUTPUT);
-    pinMode(PIN_LED2,OUTPUT);
-    pinMode(PIN_LED3,OUTPUT);
+//    pinMode(PIN_LED1,OUTPUT);
+//    pinMode(PIN_LED2,OUTPUT);
+//    pinMode(PIN_LED3,OUTPUT);
 #ifdef USE_STM32
     SerialUSB.begin(115200);
     delay(1000);

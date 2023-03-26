@@ -1,6 +1,6 @@
 {
-    "configuration": "pnum=KRABOARD_F303RBT6,upload_method=MassStorage,xserial=generic,usb=CDCgen,xusb=FS,opt=osstd,rtlib=nano",
-    "board": "kraboard:stm32:GenF3",
+    "configuration": "PSRAM=disabled,PartitionScheme=default,CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,DebugLevel=none",
+    "board": "esp32:esp32:esp32",
     "sketch": "developDemo.ino",
     "port": "COM9",
     "output": "./build"
