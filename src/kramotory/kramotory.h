@@ -6,7 +6,7 @@
  * konstrukce F1 z roku 2021
  * maximalni pocet motoru je 6
  * poslední aktualizace 1.1.2023
- * verze 1.5.0
+ * verze 1.6.2
  */
 
 /** HELP
